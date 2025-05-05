@@ -57,6 +57,22 @@ fn print_child(parent_node: &NodeLink, child_node: Option<&NodeLink>) -> String{
     return new_info;
 }
 
+pub fn print_tree(node: &Option<NodeLink>, prefix: String, is_left: bool) {
+    if let Some(node) = node {
+        println!(
+            "{}{}── {}",
+            prefix,
+            if is_left { "├" } else { "└" },
+            node.borrow().value
+        );
+
+        let new_prefix = format!("{}{}", prefix, if is_left { "│   " } else { "    " });
+
+        print_tree(&node.borrow().left, new_prefix.clone(), true);
+        print_tree(&node.borrow().right, new_prefix, false);
+    }
+}
+
 pub fn generate_dotfile_bst(root: &BstNodeLink, output_path: &str){
     let graph_name = " tree";
     let preamble = "graph".to_owned() + graph_name + "{\n";

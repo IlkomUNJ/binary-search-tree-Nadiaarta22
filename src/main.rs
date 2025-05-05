@@ -21,7 +21,7 @@ fn test_binary_search_tree(){
 
     //add right subtree
     let right_subtree: &Option<BstNodeLink> = &rootlink.borrow().right;
-    if let Some(right_tree_extract) = right_subtree {
+    if let Some(right_tree_extract) = right_subtree{
         right_tree_extract
             .borrow_mut()
             .add_left_child(right_tree_extract, 17);
@@ -32,7 +32,7 @@ fn test_binary_search_tree(){
 
     //add left subtree
     let left_subtree: &Option<BstNodeLink> = &rootlink.borrow().left;
-    if let Some(left_tree_extract) = left_subtree {
+    if let Some(left_tree_extract) = left_subtree{
         left_tree_extract
             .borrow_mut()
             .add_left_child(left_tree_extract, 3);
@@ -57,14 +57,52 @@ fn test_binary_search_tree(){
             }
         }
     }
+    // BstNode::tree_insert(&rootlink, 6);
+    // BstNode::tree_insert(&rootlink, 18);
+    // BstNode::tree_insert(&rootlink, 3);
+    // BstNode::tree_insert(&rootlink, 7);
+    // BstNode::tree_insert(&rootlink, 17);
+    // BstNode::tree_insert(&rootlink, 20);
+    // BstNode::tree_insert(&rootlink, 2);
+    // BstNode::tree_insert(&rootlink, 4);
+    // BstNode::tree_insert(&rootlink, 13);
+    // BstNode::tree_insert(&rootlink, 9);
+
+    // let rootlink: BstNodeLink = BstNode::new_bst_nodelink(15);
+    // BstNode::tree_insert(&rootlink, 10);
+    // BstNode::tree_insert(&rootlink, 19);
+    // BstNode::tree_insert(&rootlink, 10); // duplicate key
 
     //print the tree at this time
+    println!("Tree before delete:");
     let main_tree_path = "bst_graph.dot";
     generate_dotfile_bst(&rootlink, main_tree_path);
+    BstNode::print_tree(&Some(rootlink.clone()), "".to_string(), false);
+
+    if let Some(node_to_delete) = rootlink.borrow().tree_search(&13) {
+        println!("Deleting node with key 13...");
+        BstNode::tree_delete(&rootlink, &node_to_delete);
+    }
+
+    println!("Tree after delete:");
+    let main_tree_path_after_delete = "bst_graph_after_delete.dot";
+    generate_dotfile_bst(&rootlink, main_tree_path_after_delete);
+    BstNode::print_tree(&Some(rootlink.clone()), "".to_string(), false);
+
+    if let Some(node_to_replace) = rootlink.borrow().tree_search(&7) {
+        if let Some(new_subtree) = rootlink.borrow().tree_search(&9) {
+            println!("Transplanting node 7 with subtree rooted at 9...");
+            BstNode::transplant(&rootlink, &node_to_replace, Some(new_subtree));
+        }
+    }
+
+    println!("Tree after transplant:");
+    let main_tree_path_after_transplant = "bst_graph_after_transplant.dot";
+    generate_dotfile_bst(&rootlink, main_tree_path_after_transplant);
+    BstNode::print_tree(&Some(rootlink.clone()), "".to_string(), false);
 
     //tree search test
     let search_keys = vec![15, 9, 22];
-
     for &key in search_keys.iter() {
         print!("tree search result of key {} is ", key);
 
@@ -94,7 +132,7 @@ fn test_binary_search_tree(){
         15, // root_node, should return the minimum of its right tree
         // test case for node with empty right child
         // should return a parent of the node's ancestor if it's a left child of the parent
-        13,
+        13, // non-existent key, because it has been deleted
         9, 7, // other keys
         22 // non-existent key
     ];
@@ -162,7 +200,6 @@ fn test_binary_tree() {
     println!("Amount of nodes in current tree: {0}", total_nodes);
 
     //Call count_nodes_by_nodelink function, supplied right subtree as parameter
-    //TODO
     let subtree_count = Node::count_nodes_by_nodelink(&right_subtree.clone().unwrap(), 0);
     println!("Amount of nodes in current subtree: {0}", subtree_count);
 
@@ -193,7 +230,6 @@ fn test_binary_tree() {
     generate_dotfile(&rootlink2, main_tree_path);
 
     //Call tree depth function at this time
-    //TODO
     let depth_now = rootlink2.borrow().tree_depth();
     println!("Depth after discard {0}", depth_now);
 
